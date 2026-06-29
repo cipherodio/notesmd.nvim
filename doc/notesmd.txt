@@ -1,0 +1,563 @@
+*notesmd.nvim.txt* Markdown note creation for Neovim
+
+Author: Jeremy
+License: MIT license
+
+==============================================================================
+CONTENTS                            *notesmd-contents*
+
+1. Introduction                  |notesmd-introduction|
+2. Installation                  |notesmd-installation|
+3. Setup                     |notesmd-setup|
+4. Commands                  |notesmd-commands|
+5. Keymaps                   |notesmd-keymaps|
+6. Configuration                 |notesmd-configuration|
+7. Frontmatter fields                |notesmd-frontmatter|
+8. Note types                    |notesmd-note-types|
+9. Stamps                    |notesmd-stamps|
+10. File naming                  |notesmd-file-naming|
+11. Healthcheck                  |notesmd-healthcheck|
+
+==============================================================================
+INTRODUCTION                      *notesmd* *notesmd-introduction*
+
+notesmd.nvim is a small Neovim plugin for creating Markdown notes with
+configurable YAML frontmatter.
+
+It supports note types such as:
+
+- journal
+- prose
+- vault
+- inbox
+
+It can also update frontmatter fields such as `completed` and `uploaded`.
+
+==============================================================================
+INSTALLATION                        *notesmd-installation*
+
+Example using vim.pack:
+>lua
+    vim.pack.add({
+    { src = "https://github.com/cipherodio/notesmd.nvim" },
+    }, { confirm = false })
+<
+==============================================================================
+SETUP                                *notesmd-setup*
+
+Example configuration:
+>lua
+    require("notesmd").setup({
+    notes_dir = vim.fn.expand("~/hub/src/mdnotes"),
+
+    types = {
+        journal = {
+        dir = "journal",
+        frontmatter = {
+            fields = {
+            title = "Journal",
+            author = "Jeremy",
+            created = true,
+            },
+            sort_order = {
+            "title",
+            "author",
+            "created",
+            },
+        },
+        },
+
+        prose = {
+        dir = "prose",
+        frontmatter = {
+            fields = {
+            title = "input",
+            author = "input",
+            created = true,
+            completed = "",
+            uploaded = "",
+            description = "input",
+            },
+            sort_order = {
+            "title",
+            "author",
+            "created",
+            "completed",
+            "uploaded",
+            "description",
+            },
+        },
+        },
+
+        vault = {
+        dir = "vault",
+        frontmatter = {
+            fields = {
+            title = "input",
+            author = "input",
+            created = true,
+            description = "input",
+            },
+            sort_order = {
+            "title",
+            "author",
+            "created",
+            "description",
+            },
+        },
+        },
+
+        inbox = {
+        dir = "inbox",
+        frontmatter = {
+            fields = {
+            title = "input",
+            author = "Jeremy",
+            created = true,
+            description = "input",
+            },
+            sort_order = {
+            "title",
+            "author",
+            "created",
+            "description",
+            },
+        },
+        },
+    },
+
+    keymaps = {
+        journal = "<leader>mj",
+        prose = "<leader>mp",
+        vault = "<leader>mv",
+        inbox = "<leader>mi",
+        completestamp = "<leader>mc",
+        uploadstamp = "<leader>mu",
+    },
+    })
+<
+==============================================================================
+COMMANDS                          *notesmd-commands*
+
+The main command is:                    *:NotesMD*
+>vim
+    :NotesMD {command}
+<
+Available commands:
+
+Create or open today's journal note.            *:NotesMD-journal*
+>vim
+    :NotesMD journal
+<
+Create a prose note.                    *:NotesMD-prose*
+>vim
+    :NotesMD prose
+<
+Create a vault note.                    *:NotesMD-vault*
+>vim
+    :NotesMD vault
+<
+Create an inbox note.                   *:NotesMD-inbox*
+>vim
+    :NotesMD inbox
+<
+Update `completed` frontmatter field of current buffer. *:NotesMD-completestamp*
+>vim
+    :NotesMD completestamp
+<
+Update `uploaded` frontmatter field of current buffer.  *:NotesMd-uploadstamp*
+>vim
+    :NotesMd uploadstamp
+<
+==============================================================================
+KEYMAPS                            *notesmd-keymaps*
+
+Keymaps are optional.
+
+Example:
+>lua
+    keymaps = {
+    journal = "<leader>mj",
+    prose = "<leader>mp",
+    vault = "<leader>mv",
+    inbox = "<leader>mi",
+    completestamp = "<leader>mc",
+    uploadstamp = "<leader>mu",
+    }
+<
+Each keymap runs the matching notesmd command.
+
+For example:
+>lua
+    journal = "<leader>mj"
+<
+runs:
+>vim
+    :NotesMD journal
+<
+==============================================================================
+CONFIGURATION                      *notesmd-configuration*
+
+`notes_dir` is the root notes directory.        *notesmd-notes_dir*
+
+Example:
+>lua
+    notes_dir = vim.fn.expand("~/hub/src/mdnotes")
+<
+Each note type creates files inside its configured directory.
+
+Example:
+>lua
+    types = {
+    prose = {
+        dir = "prose",
+    },
+    }
+<
+This creates notes inside:
+>
+    ~/hub/src/mdnotes/prose/
+<
+If `notes_dir` is missing, notesmd.nvim shows an error notification.
+
+==============================================================================
+FRONTMATTER FIELDS                  *notesmd-frontmatter*
+
+Frontmatter is configured with:
+>lua
+    fields = {
+    title = "input",
+    author = "Jeremy",
+    created = true,
+    }
+<
+The output order is controlled with:
+>lua
+    sort_order = {
+    "title",
+    "author",
+    "created",
+    }
+<
+------------------------------------------------------------------------------
+Fixed values                      *notesmd-frontmatter-fixed*
+
+A fixed value is written directly.
+
+Example:
+>lua
+    author = "Jeremy"
+<
+Output:
+>yaml
+    author: Jeremy
+<
+------------------------------------------------------------------------------
+Input values                      *notesmd-frontmatter-input*
+
+Use the string "input" to ask for a value.
+
+Example:
+>lua
+    title = "input"
+<
+This prompts:
+>
+    Title:
+<
+Then writes the entered value:
+>yaml
+    title: My Story
+<
+------------------------------------------------------------------------------
+Empty values                      *notesmd-frontmatter-empty*
+
+Use an empty string to create an empty quoted field.
+
+Example:
+>lua
+    completed = ""
+<
+Output:
+>yaml
+    completed: ""
+<
+------------------------------------------------------------------------------
+Created timestamp               *notesmd-frontmatter-created*
+
+Use:
+>lua
+    created = true
+<
+Output example:
+>yaml
+    created: "June 28, 2026 Sun 05:30 AM"
+<
+A custom date format can also be used:
+>lua
+    created = "%Y-%m-%d %H:%M"
+<
+Output example:
+>yaml
+    created: "2026-06-28 05:30"
+<
+==============================================================================
+NOTE TYPES                      *notesmd-note-types*
+
+Default note types:
+>
+    journal
+    prose
+    vault
+    inbox
+<
+Each type has a directory:
+>lua
+    dir = "prose"
+<
+and optional frontmatter:
+>lua
+    frontmatter = {
+    fields = {},
+    sort_order = {},
+    }
+<
+------------------------------------------------------------------------------
+Journal                          *notesmd-journal*
+
+The journal command creates or opens today's journal note.
+
+Command:
+>vim
+    :NotesMD journal
+<
+Example file:
+>
+    jun-28-2026-sun.md
+<
+Example config:
+>lua
+    journal = {
+    dir = "journal",
+    frontmatter = {
+        fields = {
+        title = "Journal",
+        author = "Jeremy",
+        created = true,
+        },
+        sort_order = {
+        "title",
+        "author",
+        "created",
+        },
+    },
+    }
+<
+Example output:
+>yaml
+    ---
+    title: Journal
+    author: Jeremy
+    created: "June 28, 2026 Sun 05:30 AM"
+    ---
+<
+------------------------------------------------------------------------------
+Prose                              *notesmd-prose*
+
+The prose command creates a prose note.
+
+Command:
+>vim
+    :NotesMD prose
+<
+Example config:
+>lua
+    prose = {
+    dir = "prose",
+    frontmatter = {
+        fields = {
+        title = "input",
+        author = "input",
+        created = true,
+        completed = "",
+        uploaded = "",
+        description = "input",
+        },
+        sort_order = {
+        "title",
+        "author",
+        "created",
+        "completed",
+        "uploaded",
+        "description",
+        },
+    },
+    }
+<
+Prompts:
+>
+    Title:
+    Author:
+    Description:
+    Filename (leave blank to use title):
+<
+Example output:
+>yaml
+    ---
+    title: My Story
+    author: Jeremy
+    created: "June 28, 2026 Sun 05:30 AM"
+    completed: ""
+    uploaded: ""
+    description: A short story idea.
+    ---
+<
+------------------------------------------------------------------------------
+Vault                              *notesmd-vault*
+
+The vault command creates a vault note.
+
+Command:
+>vim
+    :NotesMD vault
+<
+Example config:
+>lua
+    vault = {
+    dir = "vault",
+    frontmatter = {
+        fields = {
+        title = "input",
+        author = "input",
+        created = true,
+        description = "input",
+        },
+        sort_order = {
+        "title",
+        "author",
+        "created",
+        "description",
+        },
+    },
+    }
+<
+Prompts:
+>
+    Title:
+    Author:
+    Description:
+    Filename (leave blank to use title):
+<
+------------------------------------------------------------------------------
+Inbox                              *notesmd-inbox*
+
+The inbox command creates an inbox note.
+
+Command:
+>vim
+    :NotesMD inbox
+<
+Example config:
+>lua
+    inbox = {
+    dir = "inbox",
+    frontmatter = {
+        fields = {
+        title = "input",
+        author = "Jeremy",
+        created = true,
+        description = "input",
+        },
+        sort_order = {
+        "title",
+        "author",
+        "created",
+        "description",
+        },
+    },
+    }
+<
+Prompts:
+>
+    Title:
+    Description:
+    Filename (leave blank to use title):
+<
+It does not ask for author because the example config uses a fixed author:
+>lua
+    author = "Jeremy"
+<
+==============================================================================
+STAMPS                            *notesmd-stamps*
+
+notesmd.nvim can update existing frontmatter fields.
+
+------------------------------------------------------------------------------
+Complete stamp                  *notesmd-completestamp*
+
+Command:
+>vim
+    :NotesMD completestamp
+<
+Before:
+>yaml
+    completed: ""
+<
+After:
+>yaml
+    completed: "June 28, 2026 Sun 05:30 AM"
+<
+------------------------------------------------------------------------------
+Upload stamp                        *notesmd-uploadstamp*
+
+Command:
+>vim
+    :NotesMD uploadstamp
+<
+Before:
+>yaml
+    uploaded: ""
+<
+After:
+>yaml
+    uploaded: "June 28, 2026 Sun 05:30 AM"
+<
+If the field does not exist in the current buffer, notesmd.nvim shows a warning.
+
+==============================================================================
+FILE NAMING                        *notesmd-file-naming*
+
+Journal notes use the current date as the filename.
+
+Example:
+>
+    jun-28-2026-sun.md
+<
+Prose, vault, and inbox notes ask for a filename.
+
+If the filename is left blank, the title is used.
+
+Example title:
+>
+    My First Story
+<
+Generated filename:
+>
+    my_first_story.md
+<
+==============================================================================
+HEALTHCHECK                      *notesmd-healthcheck*
+
+Run:
+>vim
+    :checkhealth notesmd
+<
+The healthcheck verifies:
+
+- notes_dir is configured
+- notes_dir exists
+- note types are configured
+- keymaps are configured
+
+==============================================================================
+vim:tw=78:ts=8:noet:ft=help:norl:syntax=help:
