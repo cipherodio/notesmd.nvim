@@ -1,10 +1,10 @@
 ---
-title: Mdtask
+title: NotesMD
 author: Jeremy
 description:  A small Neovim plugin for creating Markdown notes with configurable YAML frontmatter.
 ---
 
-`mdtask.nvim` can create different note types such as:
+`notesmd.nvim` can create different note types such as:
 
 - journal
 - prose
@@ -19,14 +19,14 @@ Using `vim.pack`:
 
 ```lua
 vim.pack.add({
-    { src = "https://github.com/cipherodio/mdtask.nvim" },
+    { src = "https://github.com/cipherodio/notesmd.nvim" },
 }, { confirm = false })
 ```
 
 ## Setup
 
 ```lua
-require("mdtask").setup({
+require("notesmd").setup({
     notes_dir = vim.fn.expand("~/hub/src/mdnotes"),
 
     types = {
@@ -119,12 +119,12 @@ require("mdtask").setup({
 ## Commands
 
 ```vim
-:Mdtask journal
-:Mdtask prose
-:Mdtask vault
-:Mdtask inbox
-:Mdtask completestamp
-:Mdtask uploadstamp
+:NotesMD journal
+:NotesMD prose
+:NotesMD vault
+:NotesMD inbox
+:NotesMD completestamp
+:NotesMD uploadstamp
 ```
 
 ## Field values
@@ -162,7 +162,7 @@ created = "%Y-%m-%d %H:%M"
 ## Healthcheck
 
 ```vim
-:checkhealth mdtask
+:checkhealth notesmd
 ```
 
 ## Help
@@ -170,16 +170,7 @@ created = "%Y-%m-%d %H:%M"
 Full documentation is available inside Neovim:
 
 ```vim
-:help mdtask
-```
-
-Useful sections:
-
-```vim
-:help mdtask-setup
-:help mdtask-commands
-:help mdtask-frontmatter
-:help mdtask-healthcheck
+:help notesmd
 ```
 
 ## License
