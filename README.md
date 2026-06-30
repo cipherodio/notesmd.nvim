@@ -4,6 +4,8 @@ author: Jeremy
 description:  A small Neovim plugin for creating Markdown notes with configurable YAML frontmatter.
 ---
 
+## Features
+
 `notesmd.nvim` can create different note types such as:
 
 - journal
@@ -172,7 +174,3 @@ Full documentation is available inside Neovim:
 ```vim
 :help notesmd
 ```
-
-## License
-
-MIT
